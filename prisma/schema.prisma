@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  password String
+  role     String @default("STAFF") // "ADMIN" or "STAFF"
+  shifts   Shift[]
+}
+
+model Shift {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  date      String  // "YYYY-M-D" 形式
+  available Boolean @default(true)  // 従業員の希望: true=○, false=×
+  time      String? // 管理者が確定する時間 (null=未確定, "10:00-14:00" etc)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
