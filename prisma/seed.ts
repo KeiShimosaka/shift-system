@@ -1,48 +1,52 @@
+import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../lib/prisma';
+import 'dotenv/config';
+
+const sql = neon(process.env.DATABASE_URL!);
 
 async function main() {
+  console.log('🌱 Seeding database...');
+
   // 管理者
   const adminPw = await bcrypt.hash('admin123', 10);
-  await prisma.user.upsert({
-    where: { name: '下坂' },
-    update: { password: adminPw, role: 'ADMIN' },
-    create: { name: '下坂', password: adminPw, role: 'ADMIN' },
-  });
+  await sql`
+        INSERT INTO "User" ("name", "password", "role")
+        VALUES ('下坂', ${adminPw}, 'ADMIN')
+        ON CONFLICT ("name") DO UPDATE SET "password" = ${adminPw}, "role" = 'ADMIN'
+    `;
+  console.log('  ✅ 管理者: 下坂 / admin123');
 
-  // スタッフ
+  // スタッフA
   const staff1Pw = await bcrypt.hash('staff1', 10);
-  await prisma.user.upsert({
-    where: { name: 'スタッフA' },
-    update: { password: staff1Pw },
-    create: { name: 'スタッフA', password: staff1Pw, role: 'STAFF' },
-  });
+  await sql`
+        INSERT INTO "User" ("name", "password", "role")
+        VALUES ('スタッフA', ${staff1Pw}, 'STAFF')
+        ON CONFLICT ("name") DO UPDATE SET "password" = ${staff1Pw}
+    `;
+  console.log('  ✅ スタッフA / staff1');
 
+  // スタッフB
   const staff2Pw = await bcrypt.hash('staff2', 10);
-  await prisma.user.upsert({
-    where: { name: 'スタッフB' },
-    update: { password: staff2Pw },
-    create: { name: 'スタッフB', password: staff2Pw, role: 'STAFF' },
-  });
+  await sql`
+        INSERT INTO "User" ("name", "password", "role")
+        VALUES ('スタッフB', ${staff2Pw}, 'STAFF')
+        ON CONFLICT ("name") DO UPDATE SET "password" = ${staff2Pw}
+    `;
+  console.log('  ✅ スタッフB / staff2');
 
+  // スタッフC
   const staff3Pw = await bcrypt.hash('staff3', 10);
-  await prisma.user.upsert({
-    where: { name: 'スタッフC' },
-    update: { password: staff3Pw },
-    create: { name: 'スタッフC', password: staff3Pw, role: 'STAFF' },
-  });
+  await sql`
+        INSERT INTO "User" ("name", "password", "role")
+        VALUES ('スタッフC', ${staff3Pw}, 'STAFF')
+        ON CONFLICT ("name") DO UPDATE SET "password" = ${staff3Pw}
+    `;
+  console.log('  ✅ スタッフC / staff3');
 
-  console.log('✅ Seed data inserted!');
-  console.log('  管理者: 下坂 / admin123');
-  console.log('  スタッフA / staff1');
-  console.log('  スタッフB / staff2');
-  console.log('  スタッフC / staff3');
+  console.log('✅ Seed complete!');
 }
 
-main()
-  .then(async () => { await prisma.$disconnect(); })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+main().catch(e => {
+  console.error('❌ Error:', e);
+  process.exit(1);
+});
