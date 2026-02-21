@@ -78,6 +78,15 @@ export default function ShiftCalendar() {
         const result: typeof allShifts = [];
         for (const s of dayShifts) {
             const staff = staffList.find(st => st.id === s.userId);
+
+            // 表示条件: 
+            // - 管理人(ADMIN)または店長(MANAGER)は全てのシフトを閲覧可能
+            // - パート(USER)または未ログイン時の場合は、自身のシフトのみを閲覧可能にする
+            //   ※ 未ログインの場合は user?.userId が存在しないため誰も表示されない
+            const canView = user?.role === "ADMIN" || user?.role === "MANAGER" || s.userId === user?.userId;
+
+            if (!canView) continue;
+
             if (staff?.role === "MANAGER" && s.available) {
                 // 店長は出勤マークとして表示
                 result.push({ ...s, time: "出勤" });
