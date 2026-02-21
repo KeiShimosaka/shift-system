@@ -10,9 +10,9 @@ import UserManagementModal from '../../components/UserManagementModal';
 import { isHoliday, getHolidayName, isNonWorkday } from '../../utils/holidays';
 
 const TIME_BLOCKS = [
-    { label: "10時〜", value: "10:00" },
-    { label: "10:30〜", value: "10:30" },
-    { label: "11時〜", value: "11:00" },
+    { label: "10:00-14:00", value: "10:00" },
+    { label: "10:30-14:30", value: "10:30" },
+    { label: "11:00-15:00", value: "11:00" },
 ];
 
 function getDaysInMonth(year: number, month: number): number {

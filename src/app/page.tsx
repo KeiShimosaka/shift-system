@@ -34,16 +34,16 @@ function getDayBg(year: number, month: number, day: number): string {
 }
 
 function shortTimeLabel(time: string): string {
-    if (time === "10:00") return "10時〜";
-    if (time === "10:30") return "10:30〜";
-    if (time === "11:00") return "11時〜";
+    if (time === "10:00") return "10:00-14:00";
+    if (time === "10:30") return "10:30-14:30";
+    if (time === "11:00") return "11:00-15:00";
     return time;
 }
 
 function timeColor(time: string): string {
-    if (time === "10:00") return "bg-orange-500 text-white";
-    if (time === "10:30") return "bg-yellow-500 text-white";
-    if (time === "11:00") return "bg-amber-500 text-white";
+    if (time === "10:00") return "bg-emerald-500 text-white";
+    if (time === "10:30") return "bg-amber-500 text-white";
+    if (time === "11:00") return "bg-rose-500 text-white";
     return "bg-gray-200";
 }
 
@@ -192,9 +192,9 @@ export default function ShiftCalendar() {
                 </div>
 
                 <div className="mt-3 sm:mt-4 flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-stone-200">
-                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-500 rounded inline-block"></span> 10時〜</div>
-                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-500 rounded inline-block"></span> 10:30〜</div>
-                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded inline-block"></span> 11時〜</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 rounded inline-block"></span> 10:00-14:00</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded inline-block"></span> 10:30-14:30</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-rose-500 rounded inline-block"></span> 11:00-15:00</div>
                     <div className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-400 rounded inline-block"></span> 店長出勤</div>
                 </div>
             </div>
