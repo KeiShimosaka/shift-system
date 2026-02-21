@@ -127,8 +127,8 @@ export default function UserManagementModal({ isOpen, onClose }: UserManagementM
                                             <tr key={user.id} className="hover:bg-gray-50">
                                                 <td className="p-3 font-medium text-gray-800">{user.name}</td>
                                                 <td className="p-3">
-                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                                                        {user.role}
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-100 text-red-600' : user.role === 'MANAGER' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                                                        {user.role === 'ADMIN' ? '管理人' : user.role === 'MANAGER' ? '店長' : 'パート'}
                                                     </span>
                                                 </td>
                                                 <td className="p-3 text-right">
@@ -192,8 +192,9 @@ export default function UserManagementModal({ isOpen, onClose }: UserManagementM
                                                 onChange={e => setRole(e.target.value)}
                                                 className="w-full border rounded p-2 focus:ring-2 focus:ring-orange-500 outline-none bg-white"
                                             >
-                                                <option value="STAFF">STAFF</option>
-                                                <option value="ADMIN">ADMIN</option>
+                                                <option value="STAFF">パート</option>
+                                                <option value="MANAGER">店長</option>
+                                                <option value="ADMIN">管理人</option>
                                             </select>
                                         </div>
                                     )}

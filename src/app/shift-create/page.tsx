@@ -158,7 +158,7 @@ export default function StaffShiftPage() {
                                             </button>
                                             {shift?.time && (
                                                 <div className="text-[8px] sm:text-[9px] mt-1 bg-orange-100 text-orange-700 rounded px-1 py-0.5 font-bold">
-                                                    {shift.time === "10:00-14:00" ? "10-14時" : "11-15時"}
+                                                    {shift.time === "10:00" ? "10時〜" : shift.time === "10:30" ? "10:30〜" : shift.time === "11:00" ? "11時〜" : shift.time}
                                                 </div>
                                             )}
                                         </td>

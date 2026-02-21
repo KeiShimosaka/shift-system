@@ -34,14 +34,16 @@ function getDayBg(year: number, month: number, day: number): string {
 }
 
 function shortTimeLabel(time: string): string {
-    if (time === "10:00-14:00") return "10-14";
-    if (time === "11:00-15:00") return "11-15";
+    if (time === "10:00") return "10時〜";
+    if (time === "10:30") return "10:30〜";
+    if (time === "11:00") return "11時〜";
     return time;
 }
 
 function timeColor(time: string): string {
-    if (time === "10:00-14:00") return "bg-orange-500 text-white";
-    if (time === "11:00-15:00") return "bg-amber-500 text-white";
+    if (time === "10:00") return "bg-orange-500 text-white";
+    if (time === "10:30") return "bg-yellow-500 text-white";
+    if (time === "11:00") return "bg-amber-500 text-white";
     return "bg-gray-200";
 }
 
@@ -71,7 +73,19 @@ export default function ShiftCalendar() {
 
     const getShiftsForDay = (day: number) => {
         const date = `${year}-${month}-${day}`;
-        return allShifts.filter(s => s.date === date && s.time);
+        // パートの確定時間 + 店長の出勤（○）を表示
+        const dayShifts = allShifts.filter(s => s.date === date);
+        const result: typeof allShifts = [];
+        for (const s of dayShifts) {
+            const staff = staffList.find(st => st.id === s.userId);
+            if (staff?.role === "MANAGER" && s.available) {
+                // 店長は出勤マークとして表示
+                result.push({ ...s, time: "出勤" });
+            } else if (s.time) {
+                result.push(s);
+            }
+        }
+        return result;
     };
 
     const handleLogout = async () => {
@@ -90,7 +104,7 @@ export default function ShiftCalendar() {
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         {user ? (
                             <>
-                                <span className="text-xs text-gray-500">{user.name}（{user.role === "ADMIN" ? "管理者" : "スタッフ"}）</span>
+                                <span className="text-xs text-gray-500">{user.name}（{user.role === "ADMIN" ? "管理人" : user.role === "MANAGER" ? "店長" : "パート"}）</span>
                                 <Link
                                     href={user.role === "ADMIN" ? "/shift-create/admin" : "/shift-create"}
                                     className="bg-orange-600 text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-orange-700 transition-all shadow-md text-sm"
@@ -161,9 +175,9 @@ export default function ShiftCalendar() {
                                         )}
                                         <div className="space-y-0.5 sm:space-y-1">
                                             {shifts.map((s, i) => (
-                                                <div key={i} className={`text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded ${timeColor(s.time!)} leading-tight`}>
+                                                <div key={i} className={`text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded ${s.time === "出勤" ? "bg-blue-400 text-white" : timeColor(s.time!)} leading-tight`}>
                                                     <span className="block sm:inline">{s.userName}</span>
-                                                    <span className="opacity-80 hidden sm:inline"> {shortTimeLabel(s.time!)}</span>
+                                                    <span className="opacity-80 hidden sm:inline"> {s.time === "出勤" ? "出勤" : shortTimeLabel(s.time!)}</span>
                                                 </div>
                                             ))}
                                             {shifts.length === 0 && (
@@ -178,8 +192,10 @@ export default function ShiftCalendar() {
                 </div>
 
                 <div className="mt-3 sm:mt-4 flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-stone-200">
-                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-500 rounded inline-block"></span> 10-14時</div>
-                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded inline-block"></span> 11-15時</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-500 rounded inline-block"></span> 10時〜</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-500 rounded inline-block"></span> 10:30〜</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded inline-block"></span> 11時〜</div>
+                    <div className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-400 rounded inline-block"></span> 店長出勤</div>
                 </div>
             </div>
         </div>

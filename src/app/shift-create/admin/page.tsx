@@ -10,8 +10,9 @@ import UserManagementModal from '../../components/UserManagementModal';
 import { isHoliday, getHolidayName, isNonWorkday } from '../../utils/holidays';
 
 const TIME_BLOCKS = [
-    { label: "10-14時", value: "10:00-14:00" },
-    { label: "11-15時", value: "11:00-15:00" },
+    { label: "10時〜", value: "10:00" },
+    { label: "10:30〜", value: "10:30" },
+    { label: "11時〜", value: "11:00" },
 ];
 
 function getDaysInMonth(year: number, month: number): number {
@@ -32,7 +33,7 @@ function getDayColor(year: number, month: number, day: number): string {
 
 // 人数判定ロジック
 function getStaffCountStatus(year: number, month: number, day: number, count: number): { text: string; color: string } {
-    const target = isNonWorkday(year, month, day) ? 4 : 3;
+    const target = isNonWorkday(year, month, day) ? 6 : 5;
 
     if (count === target) return { text: "OK", color: "bg-green-100 text-green-700" };
     if (count > target) return { text: "多い", color: "bg-blue-100 text-blue-700" };
@@ -96,8 +97,8 @@ export default function AdminShiftPage() {
         await logout();
     };
 
-    // STAFFのみ表示
-    const staffOnly = staffList.filter(s => s.role === "STAFF");
+    // 店長とパートを表示（管理人は除く）
+    const staffAndManagers = staffList.filter(s => s.role !== "ADMIN");
 
     return (
         <div className="min-h-screen bg-orange-50 p-2 sm:p-4 md:p-8 text-slate-900">
@@ -169,9 +170,9 @@ export default function AdminShiftPage() {
                             <tr className="bg-orange-50">
                                 <td className="p-2 sm:p-3 border-b border-orange-200 font-bold text-gray-600 text-xs sm:text-sm sticky left-0 z-20 bg-orange-50">必要人数</td>
                                 {DAYS.map(day => {
-                                    // 日ごとの出勤可能人数を計算
+                                    // 日ごとの出勤可能人数を計算（店長含む）
                                     const date = `${year}-${month}-${day}`;
-                                    const count = staffList.filter(s => s.role === "STAFF").filter(s => {
+                                    const count = staffList.filter(s => s.role !== "ADMIN").filter(s => {
                                         const shift = allShifts.find(sh => sh.userId === s.id && sh.date === date);
                                         return shift?.available === true;
                                     }).length;
@@ -189,18 +190,22 @@ export default function AdminShiftPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {staffOnly.map(staff => (
+                            {staffAndManagers.map(staff => (
                                 <tr key={staff.id} className="hover:bg-orange-50/50 transition-colors">
                                     <td className="p-2 sm:p-3 border-b font-bold bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
                                         <div className="flex items-center gap-1">
-                                            <User size={14} className="text-orange-400 flex-shrink-0" />
+                                            <User size={14} className={`flex-shrink-0 ${staff.role === "MANAGER" ? "text-blue-400" : "text-orange-400"}`} />
                                             <span className="text-xs sm:text-sm truncate max-w-[50px] sm:max-w-none">{staff.name}</span>
+                                            {staff.role === "MANAGER" && (
+                                                <span className="text-[8px] bg-blue-100 text-blue-600 px-1 rounded">店長</span>
+                                            )}
                                         </div>
                                     </td>
                                     {DAYS.map(day => {
                                         const shift = getShiftFor(staff.id, day);
                                         const isAvailable = shift?.available === true;
                                         const isUnavailable = shift?.available === false;
+                                        const isManager = staff.role === "MANAGER";
                                         return (
                                             <td key={day} className="p-0.5 sm:p-1 border-b border-orange-50 text-center align-top">
                                                 {/* 希望表示（クリックで変更可能に） */}
@@ -214,8 +219,8 @@ export default function AdminShiftPage() {
                                                     {isAvailable ? "○" : isUnavailable ? "×" : "-"}
                                                 </button>
 
-                                                {/* 時間確定ボタン（希望ありの場合のみ） */}
-                                                {isAvailable && (
+                                                {/* 時間確定ボタン（パートのみ、店長は表示しない） */}
+                                                {isAvailable && !isManager && (
                                                     <div className="flex flex-col gap-0.5 sm:gap-1">
                                                         {TIME_BLOCKS.map(block => (
                                                             <button
@@ -236,7 +241,7 @@ export default function AdminShiftPage() {
                                     })}
                                 </tr>
                             ))}
-                            {staffOnly.length === 0 && (
+                            {staffAndManagers.length === 0 && (
                                 <tr>
                                     <td colSpan={daysInMonth + 1} className="p-8 text-center text-gray-400">
                                         従業員が登録されていません
