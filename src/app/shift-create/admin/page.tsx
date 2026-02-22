@@ -168,11 +168,11 @@ export default function AdminShiftPage() {
                 </div>
 
                 {/* シフト管理テーブル */}
-                <div className="bg-white rounded-xl shadow-md overflow-x-auto border border-orange-100 -mx-2 sm:mx-0">
+                <div className="bg-white rounded-xl shadow-md overflow-auto max-h-[65vh] sm:max-h-[75vh] border border-orange-100 -mx-2 sm:mx-0">
                     <table className="w-full border-collapse">
-                        <thead>
+                        <thead className="sticky top-0 z-30 shadow-sm">
                             <tr className="bg-orange-100">
-                                <th className="p-2 sm:p-3 border-b border-orange-200 text-left w-16 sm:w-24 sticky left-0 z-20 bg-orange-100 text-xs sm:text-sm">日付</th>
+                                <th className="p-2 sm:p-3 border-b border-orange-200 text-left w-16 sm:w-24 sticky left-0 z-40 bg-orange-100 text-xs sm:text-sm">日付</th>
                                 {DAYS.map(day => {
                                     const dow = getDayOfWeek(year, month, day);
                                     const color = getDayColor(year, month, day);
@@ -189,7 +189,7 @@ export default function AdminShiftPage() {
                             </tr>
                             {/* 人数判定行 */}
                             <tr className="bg-orange-50">
-                                <td className="p-2 sm:p-3 border-b border-orange-200 font-bold text-gray-600 text-xs sm:text-sm sticky left-0 z-20 bg-orange-50">必要人数</td>
+                                <td className="p-2 sm:p-3 border-b border-orange-200 font-bold text-gray-600 text-xs sm:text-sm sticky left-0 z-40 bg-orange-50">必要人数</td>
                                 {DAYS.map(day => {
                                     // 日ごとの出勤可能人数を計算（店長含む）
                                     const date = `${year}-${month}-${day}`;
