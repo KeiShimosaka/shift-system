@@ -107,7 +107,7 @@ export default function ShiftCalendar() {
 
                 <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6 bg-white p-4 sm:p-6 rounded-xl shadow-sm border-t-4 border-orange-600">
                     <div>
-                        <h1 className="text-xl sm:text-2xl font-bold text-orange-600">ラーメン大吉 シフト表</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold text-orange-600">ラーメン大吉・オムランカ シフト表</h1>
                         <p className="text-gray-400 text-xs">確定済みシフトのカレンダー表示</p>
                     </div>
                     <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -187,6 +187,7 @@ export default function ShiftCalendar() {
                                                 <div key={i} className={`text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded ${s.time === "出勤" ? "bg-blue-400 text-white" : timeColor(s.time!)} leading-tight`}>
                                                     <span className="block sm:inline">{s.userName}</span>
                                                     <span className="opacity-80 block sm:inline"> {s.time === "出勤" ? "出勤" : shortTimeLabel(s.time!)}</span>
+                                                    {s.isCurry && <span className="ml-0.5" title="カレー出勤">🍛</span>}
                                                 </div>
                                             ))}
                                             {shifts.length === 0 && (

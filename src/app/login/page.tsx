@@ -52,7 +52,7 @@ export default function LoginPage() {
                     <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                         <Lock size={28} className="text-orange-600" />
                     </div>
-                    <h1 className="text-xl font-bold text-orange-600">ラーメン大吉</h1>
+                    <h1 className="text-xl font-bold text-orange-600">ラーメン大吉・オムランカ</h1>
                     <p className="text-gray-400 text-xs mt-1">シフト管理システム</p>
                 </div>
 

@@ -33,7 +33,11 @@ function getDayColor(year: number, month: number, day: number): string {
 
 // 人数判定ロジック
 function getStaffCountStatus(year: number, month: number, day: number, count: number): { text: string; color: string } {
-    const target = isNonWorkday(year, month, day) ? 6 : 5;
+    let target = isNonWorkday(year, month, day) ? 6 : 5;
+
+    // 水曜日は店長含めて3人でOK
+    const dow = new Date(year, month - 1, day).getDay();
+    if (dow === 3) target = 3;
 
     if (count === target) return { text: "OK", color: "bg-green-100 text-green-700" };
     if (count > target) return { text: "多い", color: "bg-blue-100 text-blue-700" };
@@ -41,7 +45,7 @@ function getStaffCountStatus(year: number, month: number, day: number, count: nu
 }
 
 export default function AdminShiftPage() {
-    const { user, staffList, allShifts, loading, setConfirmTime, adminSetAvailability } = useStaff();
+    const { user, staffList, allShifts, loading, setConfirmTime, adminSetAvailability, adminToggleCurry } = useStaff();
     const router = useRouter();
 
     const [year, setYear] = useState(2026);
@@ -108,7 +112,7 @@ export default function AdminShiftPage() {
                     <div>
                         <div className="flex items-center gap-2">
                             <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">管理者</span>
-                            <h1 className="text-xl sm:text-2xl font-bold text-orange-600">ラーメン大吉 シフト管理</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold text-orange-600">ラーメン大吉・オムランカ シフト管理</h1>
                         </div>
                         <p className="text-gray-500 text-xs sm:text-sm italic">従業員の希望を確認・変更し、出勤時間を確定してください</p>
                     </div>
@@ -234,6 +238,20 @@ export default function AdminShiftPage() {
                                                                 {block.label}
                                                             </button>
                                                         ))}
+                                                    </div>
+                                                )}
+                                                {/* カレー出勤切り替えボタン（時間が確定しているパートのみ表示） */}
+                                                {isAvailable && !isManager && shift?.time && (
+                                                    <div className="mt-1">
+                                                        <button
+                                                            onClick={() => adminToggleCurry(staff.id, `${year}-${month}-${day}`, !shift.isCurry)}
+                                                            className={`text-[8px] sm:text-[9px] py-1 px-1 sm:px-1.5 rounded-full border transition-all leading-tight w-full ${shift.isCurry
+                                                                ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200"
+                                                                : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100"
+                                                                }`}
+                                                        >
+                                                            {shift.isCurry ? "🍛 カレー" : "🍜 ラーメン"}
+                                                        </button>
                                                     </div>
                                                 )}
                                             </td>

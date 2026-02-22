@@ -7,7 +7,16 @@ export async function setAvailability(userId: number, date: string, available: b
     await prisma.shift.upsert({
         where: { userId_date: { userId, date } },
         update: { available },
-        create: { userId, date, available, time: null },
+        create: { userId, date, available, time: null, isCurry: false },
+    });
+}
+
+// --- カレー/ラーメン出勤の切り替え ---
+export async function toggleCurry(userId: number, date: string, isCurry: boolean) {
+    await prisma.shift.upsert({
+        where: { userId_date: { userId, date } },
+        update: { isCurry },
+        create: { userId, date, available: true, time: null, isCurry },
     });
 }
 
@@ -16,7 +25,7 @@ export async function confirmShift(userId: number, date: string, time: string | 
     await prisma.shift.upsert({
         where: { userId_date: { userId, date } },
         update: { time },
-        create: { userId, date, available: true, time },
+        create: { userId, date, available: true, time, isCurry: false },
     });
 }
 
@@ -31,6 +40,7 @@ export async function getAllShifts() {
         date: s.date,
         available: s.available,
         time: s.time,
+        isCurry: s.isCurry,
     }));
 }
 
@@ -43,6 +53,7 @@ export async function getMyShifts(userId: number) {
         date: s.date,
         available: s.available,
         time: s.time,
+        isCurry: s.isCurry,
     }));
 }
 

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ラーメン大吉 シフト管理",
-  description: "ラーメン大吉のシフト管理システム",
+  title: "ラーメン大吉・オムランカ シフト管理",
+  description: "ラーメン大吉・オムランカのシフト管理システム",
 };
 
 export default function RootLayout({

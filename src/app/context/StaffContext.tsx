@@ -18,6 +18,7 @@ export interface ShiftItem {
     date: string;
     available: boolean;
     time: string | null;
+    isCurry: boolean;
 }
 
 export interface StaffInfo {
@@ -30,16 +31,19 @@ interface StaffContextType {
     user: UserInfo | null;
     staffList: StaffInfo[];
     allShifts: ShiftItem[];
-    myShifts: { date: string; available: boolean; time: string | null }[];
+    myShifts: { date: string; available: boolean; time: string | null; isCurry: boolean }[];
     loading: boolean;
     toggleAvailability: (date: string, available: boolean) => void;
     adminSetAvailability: (userId: number, date: string, available: boolean) => void;
     setConfirmTime: (userId: number, date: string, time: string | null) => void;
+    adminToggleCurry: (userId: number, date: string, isCurry: boolean) => void;
     registerStaff: (name: string, password: string, role?: string) => Promise<boolean>;
     updateStaff: (id: number, name: string, password?: string) => Promise<boolean>;
     deleteStaff: (id: number) => Promise<boolean>;
     refreshData: () => Promise<void>;
 }
+
+import { toggleCurry } from '../actions/shiftActions';
 
 const StaffContext = createContext<StaffContextType | null>(null);
 
@@ -53,7 +57,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserInfo | null>(null);
     const [staffList, setStaffList] = useState<StaffInfo[]>([]);
     const [allShifts, setAllShifts] = useState<ShiftItem[]>([]);
-    const [myShifts, setMyShifts] = useState<{ date: string; available: boolean; time: string | null }[]>([]);
+    const [myShifts, setMyShifts] = useState<{ date: string; available: boolean; time: string | null; isCurry: boolean }[]>([]);
     const [loading, setLoading] = useState(true);
 
     const loadData = useCallback(async () => {
@@ -97,7 +101,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
             if (exists) {
                 return prev.map(s => s.date === date ? { ...s, available } : s);
             }
-            return [...prev, { date, available, time: null }];
+            return [...prev, { date, available, time: null, isCurry: false }];
         });
 
         // 全体シフトも更新
@@ -106,7 +110,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
             if (exists) {
                 return prev.map(s => s.userId === user.userId && s.date === date ? { ...s, available } : s);
             }
-            return [...prev, { userId: user.userId, userName: user.name, date, available, time: null }];
+            return [...prev, { userId: user.userId, userName: user.name, date, available, time: null, isCurry: false }];
         });
 
         // DB保存
@@ -124,7 +128,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
                 return prev.map(s => s.userId === userId && s.date === date ? { ...s, available } : s);
             }
             const staff = staffList.find(s => s.id === userId);
-            return [...prev, { userId, userName: staff?.name || "", date, available, time: null }];
+            return [...prev, { userId, userName: staff?.name || "", date, available, time: null, isCurry: false }];
         });
 
         // 自分のmyShiftsも更新（自分のデータの場合）
@@ -134,7 +138,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
                 if (exists) {
                     return prev.map(s => s.date === date ? { ...s, available } : s);
                 }
-                return [...prev, { date, available, time: null }];
+                return [...prev, { date, available, time: null, isCurry: false }];
             });
         }
 
@@ -187,7 +191,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
                 return prev.map(s => s.userId === userId && s.date === date ? { ...s, time } : s);
             }
             const staff = staffList.find(s => s.id === userId);
-            return [...prev, { userId, userName: staff?.name || "", date, available: true, time }];
+            return [...prev, { userId, userName: staff?.name || "", date, available: true, time, isCurry: false }];
         });
 
         // DB保存
@@ -196,10 +200,28 @@ export function StaffProvider({ children }: { children: ReactNode }) {
         );
     }, [staffList]);
 
+    // 管理者: カレー/ラーメン出勤を切り替え
+    const adminToggleCurry = useCallback((userId: number, date: string, isCurry: boolean) => {
+        // ローカル即時更新
+        setAllShifts(prev => {
+            const exists = prev.find(s => s.userId === userId && s.date === date);
+            if (exists) {
+                return prev.map(s => s.userId === userId && s.date === date ? { ...s, isCurry } : s);
+            }
+            const staff = staffList.find(s => s.id === userId);
+            return [...prev, { userId, userName: staff?.name || "", date, available: true, time: null, isCurry }];
+        });
+
+        // DB保存
+        toggleCurry(userId, date, isCurry).catch(err =>
+            console.error("ラベル変更エラー:", err)
+        );
+    }, [staffList]);
+
     return (
         <StaffContext.Provider value={{
             user, staffList, allShifts, myShifts, loading,
-            toggleAvailability, adminSetAvailability, setConfirmTime,
+            toggleAvailability, adminSetAvailability, setConfirmTime, adminToggleCurry,
             registerStaff, updateStaff, deleteStaff,
             refreshData: loadData
         }}>

@@ -157,8 +157,9 @@ export default function StaffShiftPage() {
                                                 {isAvailable ? "○" : isUnavailable ? "×" : "-"}
                                             </button>
                                             {shift?.time && (
-                                                <div className="text-[8px] sm:text-[9px] mt-1 bg-orange-100 text-orange-700 rounded px-1 py-0.5 font-bold">
+                                                <div className="text-[8px] sm:text-[9px] mt-1 bg-orange-100 text-orange-700 rounded px-1 py-0.5 font-bold flex items-center justify-center gap-0.5">
                                                     {shift.time === "10:00" ? "10:00-14:00" : shift.time === "10:30" ? "10:30-14:30" : shift.time === "11:00" ? "11:00-15:00" : shift.time}
+                                                    {shift.isCurry && <span title="カレー出勤">🍛</span>}
                                                 </div>
                                             )}
                                         </td>
