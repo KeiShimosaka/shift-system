@@ -32,16 +32,33 @@ function getDayColor(year: number, month: number, day: number): string {
 }
 
 // 人数判定ロジック
-function getStaffCountStatus(year: number, month: number, day: number, count: number): { text: string; color: string } {
-    let target = isNonWorkday(year, month, day) ? 6 : 5;
-
-    // 水曜日は店長含めて3人でOK
+function getStaffCountStatus(year: number, month: number, day: number, count: number, curryCount: number, ramenCount: number): { text: string; color: string; detail: string } {
     const dow = new Date(year, month - 1, day).getDay();
-    if (dow === 3) target = 3;
 
-    if (count === target) return { text: "OK", color: "bg-green-100 text-green-700" };
-    if (count > target) return { text: "多い", color: "bg-blue-100 text-blue-700" };
-    return { text: "少ない", color: "bg-red-100 text-red-700" };
+    // 水曜日は店長含めて3人でOK (内訳問わず)
+    if (dow === 3) {
+        if (count === 3) return { text: "OK", color: "bg-green-100 text-green-700", detail: `${count}` };
+        if (count > 3) return { text: "多い", color: "bg-blue-100 text-blue-700", detail: `${count}` };
+        return { text: "少ない", color: "bg-red-100 text-red-700", detail: `${count}` };
+    }
+
+    const isHolidayOrWeekend = isNonWorkday(year, month, day);
+    const targetCurry = 2;
+    const targetRamen = isHolidayOrWeekend ? 4 : 3;
+
+    const curryOk = curryCount >= targetCurry;
+    const ramenOk = ramenCount >= targetRamen;
+    const bothOk = curryOk && ramenOk;
+
+    const detailText = `🍛${curryCount}/🍜${ramenCount}`;
+
+    if (bothOk) {
+        if (curryCount > targetCurry || ramenCount > targetRamen) {
+            return { text: "多い", color: "bg-blue-100 text-blue-700", detail: detailText };
+        }
+        return { text: "OK", color: "bg-green-100 text-green-700", detail: detailText };
+    }
+    return { text: "少ない", color: "bg-red-100 text-red-700", detail: detailText };
 }
 
 export default function AdminShiftPage() {
@@ -176,17 +193,24 @@ export default function AdminShiftPage() {
                                 {DAYS.map(day => {
                                     // 日ごとの出勤可能人数を計算（店長含む）
                                     const date = `${year}-${month}-${day}`;
-                                    const count = staffList.filter(s => s.role !== "ADMIN").filter(s => {
+                                    const availableStaffs = staffList.filter(s => s.role !== "ADMIN").map(s => {
                                         const shift = allShifts.find(sh => sh.userId === s.id && sh.date === date);
-                                        return shift?.available === true;
-                                    }).length;
+                                        return {
+                                            isAvailable: shift?.available === true,
+                                            isCurry: shift?.isCurry === true
+                                        };
+                                    }).filter(s => s.isAvailable);
 
-                                    const status = getStaffCountStatus(year, month, day, count);
+                                    const count = availableStaffs.length;
+                                    const curryCount = availableStaffs.filter(s => s.isCurry).length;
+                                    const ramenCount = count - curryCount;
+
+                                    const status = getStaffCountStatus(year, month, day, count, curryCount, ramenCount);
 
                                     return (
                                         <td key={day} className="p-1 sm:p-2 border-b border-orange-200 text-center">
-                                            <div className={`text-[10px] sm:text-xs px-1 py-0.5 rounded font-bold whitespace-nowrap ${status.color}`}>
-                                                {status.text} ({count})
+                                            <div className={`text-[10px] sm:text-[11px] px-0.5 py-0.5 sm:px-1 rounded font-bold whitespace-nowrap ${status.color}`}>
+                                                {status.text} <span className="font-normal text-[9px] sm:text-[10px]">({status.detail})</span>
                                             </div>
                                         </td>
                                     );
