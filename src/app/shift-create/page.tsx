@@ -149,9 +149,11 @@ export default function StaffShiftPage() {
                                         <td key={day} className="p-0.5 sm:p-1 border-b border-orange-50 text-center">
                                             <button
                                                 onClick={() => handleToggle(day)}
-                                                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full font-bold transition-all text-sm sm:text-base ${isAvailable ? "bg-green-100 text-green-600 scale-110" :
-                                                    isUnavailable ? "bg-red-100 text-red-600" :
-                                                        "bg-gray-100 text-gray-400"
+                                                disabled={!!shift?.time}
+                                                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full font-bold transition-all text-sm sm:text-base ${shift?.time ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                                                    } ${isAvailable ? "bg-green-100 text-green-600 scale-110" :
+                                                        isUnavailable ? "bg-red-100 text-red-600" :
+                                                            "bg-gray-100 text-gray-400"
                                                     }`}
                                             >
                                                 {isAvailable ? "○" : isUnavailable ? "×" : "-"}
