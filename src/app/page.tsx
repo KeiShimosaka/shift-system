@@ -186,7 +186,7 @@ export default function ShiftCalendar() {
                                             {shifts.map((s, i) => (
                                                 <div key={i} className={`text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded ${s.time === "出勤" ? "bg-blue-400 text-white" : timeColor(s.time!)} leading-tight`}>
                                                     <span className="block sm:inline">{s.userName}</span>
-                                                    <span className="opacity-80 hidden sm:inline"> {s.time === "出勤" ? "出勤" : shortTimeLabel(s.time!)}</span>
+                                                    <span className="opacity-80 block sm:inline"> {s.time === "出勤" ? "出勤" : shortTimeLabel(s.time!)}</span>
                                                 </div>
                                             ))}
                                             {shifts.length === 0 && (
