@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, CalendarDays, LogOut, LogIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, LogOut, LogIn, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { useStaff } from './context/StaffContext';
 import { logout } from './actions/authActions';
@@ -105,12 +105,20 @@ export default function ShiftCalendar() {
         <div className="min-h-screen bg-stone-50 p-2 sm:p-4 md:p-8 text-slate-900">
             <div className="max-w-6xl mx-auto">
 
-                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6 bg-white p-4 sm:p-6 rounded-xl shadow-sm border-t-4 border-orange-600">
+                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6 bg-white p-4 sm:p-6 rounded-xl shadow-sm border-t-4 border-orange-600 print:hidden">
                     <div>
                         <h1 className="text-xl sm:text-2xl font-bold text-orange-600">ラーメン大吉・オムランカ シフト表</h1>
-                        <p className="text-gray-400 text-xs">確定済みシフトのカレンダー表示</p>
+                        <p className="text-gray-400 text-xs text-left">確定済みシフトのカレンダー表示</p>
                     </div>
                     <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <button
+                            onClick={() => window.print()}
+                            className="bg-stone-500 text-white px-3 sm:px-4 py-2 rounded-full flex items-center gap-2 hover:bg-stone-600 transition-all shadow-md text-sm print:hidden focus:outline-none focus:ring-2 focus:ring-stone-500"
+                            title="A4サイズで印刷"
+                        >
+                            <Printer size={16} />
+                            <span className="hidden sm:inline">印刷</span>
+                        </button>
                         {user ? (
                             <>
                                 <span className="text-xs text-gray-500">{user.name}（{user.role === "ADMIN" ? "管理人" : user.role === "MANAGER" ? "店長" : "パート"}）</span>
@@ -140,7 +148,7 @@ export default function ShiftCalendar() {
                     </div>
                 </header>
 
-                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 bg-white p-2 sm:p-3 rounded-xl shadow-sm border border-stone-200">
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4 bg-white p-2 sm:p-3 rounded-xl shadow-sm border border-stone-200 print:border-none print:shadow-none print:mb-2">
                     <button onClick={prevMonth} className="p-2 rounded-full hover:bg-orange-100 active:bg-orange-200 transition-colors">
                         <ChevronLeft size={20} className="text-orange-600" />
                     </button>

@@ -99,7 +99,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
         setMyShifts(prev => {
             const exists = prev.find(s => s.date === date);
             if (exists) {
-                return prev.map(s => s.date === date ? { ...s, available } : s);
+                return prev.map(s => s.date === date ? { ...s, available, ...(available ? {} : { time: null, isCurry: false }) } : s);
             }
             return [...prev, { date, available, time: null, isCurry: false }];
         });
@@ -108,7 +108,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
         setAllShifts(prev => {
             const exists = prev.find(s => s.userId === user.userId && s.date === date);
             if (exists) {
-                return prev.map(s => s.userId === user.userId && s.date === date ? { ...s, available } : s);
+                return prev.map(s => s.userId === user.userId && s.date === date ? { ...s, available, ...(available ? {} : { time: null, isCurry: false }) } : s);
             }
             return [...prev, { userId: user.userId, userName: user.name, date, available, time: null, isCurry: false }];
         });
@@ -125,7 +125,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
         setAllShifts(prev => {
             const exists = prev.find(s => s.userId === userId && s.date === date);
             if (exists) {
-                return prev.map(s => s.userId === userId && s.date === date ? { ...s, available } : s);
+                return prev.map(s => s.userId === userId && s.date === date ? { ...s, available, ...(available ? {} : { time: null, isCurry: false }) } : s);
             }
             const staff = staffList.find(s => s.id === userId);
             return [...prev, { userId, userName: staff?.name || "", date, available, time: null, isCurry: false }];
@@ -136,7 +136,7 @@ export function StaffProvider({ children }: { children: ReactNode }) {
             setMyShifts(prev => {
                 const exists = prev.find(s => s.date === date);
                 if (exists) {
-                    return prev.map(s => s.date === date ? { ...s, available } : s);
+                    return prev.map(s => s.date === date ? { ...s, available, ...(available ? {} : { time: null, isCurry: false }) } : s);
                 }
                 return [...prev, { date, available, time: null, isCurry: false }];
             });

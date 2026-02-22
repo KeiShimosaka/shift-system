@@ -6,7 +6,7 @@ import { prisma } from '../../../lib/prisma';
 export async function setAvailability(userId: number, date: string, available: boolean) {
     await prisma.shift.upsert({
         where: { userId_date: { userId, date } },
-        update: { available },
+        update: available ? { available } : { available: false, time: null, isCurry: false },
         create: { userId, date, available, time: null, isCurry: false },
     });
 }

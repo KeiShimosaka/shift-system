@@ -73,3 +73,72 @@ body {
 .animate-shake {
   animation: shake 0.4s ease-in-out;
 }
+
+/* --- 印刷用スタイル (A4) --- */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* テーブルの改ページ制御 */
+  table {
+    page-break-inside: auto;
+    width: 100% !important;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  /* 余計な装飾を削減 */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl {
+    box-shadow: none !important;
+  }
+
+  /* コンテナの横幅や余白を印刷サイズ（A4）に最適化 */
+  .min-h-screen {
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .max-w-6xl {
+    max-width: 100% !important;
+  }
+
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* テキストやボーダーをくっきりさせる */
+  * {
+    border-color: #ddd !important;
+  }
+
+  .text-orange-600,
+  .text-orange-700,
+  .text-blue-500,
+  .text-red-500 {
+    /* 印刷時の薄れ防止のため少し濃く */
+    filter: contrast(1.2);
+  }
+}
