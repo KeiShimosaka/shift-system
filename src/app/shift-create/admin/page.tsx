@@ -264,8 +264,8 @@ export default function AdminShiftPage() {
                                                         ))}
                                                     </div>
                                                 )}
-                                                {/* カレー出勤切り替えボタン（時間が確定しているパートのみ表示） */}
-                                                {isAvailable && !isManager && shift?.time && (
+                                                {/* カレー出勤切り替えボタン（パートは時間が確定している場合のみ、店長は出勤可能なら表示） */}
+                                                {isAvailable && (isManager || shift?.time) && (
                                                     <div className="mt-1">
                                                         <button
                                                             onClick={() => adminToggleCurry(staff.id, `${year}-${month}-${day}`, !shift.isCurry)}
