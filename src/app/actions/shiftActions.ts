@@ -63,5 +63,9 @@ export async function getStaffList() {
         select: { id: true, name: true, role: true },
         orderBy: { id: 'asc' },
     });
-    return users;
+    return users.sort((a, b) => {
+        if (a.role === "MANAGER" && b.role !== "MANAGER") return -1;
+        if (b.role === "MANAGER" && a.role !== "MANAGER") return 1;
+        return a.id - b.id;
+    });
 }
