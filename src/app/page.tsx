@@ -50,8 +50,8 @@ function timeColor(time: string): string {
 export default function ShiftCalendar() {
     const { user, allShifts, staffList, loading } = useStaff();
 
-    const [year, setYear] = useState(2026);
-    const [month, setMonth] = useState(2);
+    const [year, setYear] = useState(() => new Date().getFullYear());
+    const [month, setMonth] = useState(() => new Date().getMonth() + 1);
 
     if (loading) return <div className="min-h-screen bg-stone-50 flex items-center justify-center text-orange-600">読み込み中...</div>;
 

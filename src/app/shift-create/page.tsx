@@ -28,8 +28,8 @@ export default function StaffShiftPage() {
     const { user, myShifts, loading, toggleAvailability } = useStaff();
     const router = useRouter();
 
-    const [year, setYear] = useState(2026);
-    const [month, setMonth] = useState(2);
+    const [year, setYear] = useState(() => new Date().getFullYear());
+    const [month, setMonth] = useState(() => new Date().getMonth() + 1);
 
     if (loading) return <div className="min-h-screen bg-orange-50 flex items-center justify-center text-orange-600">読み込み中...</div>;
 
